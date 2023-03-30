@@ -7,7 +7,6 @@ public class TimeDescription implements Serializable {
     private long id;
     private char personalRating; // 0 to 10
     private String description;
-    private String category;
     private String reward;
     private TimeKind kind;
 
@@ -34,19 +33,6 @@ public class TimeDescription implements Serializable {
         }
         return this.description;
     }
-
-    public boolean addCategory(String category){
-        this.category = category;
-        return true;
-    }
-
-    public String getCategory(){
-        if (this.category == null){
-            return "";
-        }
-        return this.category;
-    }
-
 
     public boolean addReward(String reward){
         if (reward.length() <= 127){

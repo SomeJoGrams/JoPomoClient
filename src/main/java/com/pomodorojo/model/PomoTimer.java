@@ -15,11 +15,7 @@ public class PomoTimer {
     private boolean isPaused;
     private Duration currentMaxTime; // given in minutes
     private Duration currentShortBreakTime;
-
     private int maximumSessionUnits;
-    /**
-     *
-     */
     private Duration currentLongBreakTime;
 
     /**
