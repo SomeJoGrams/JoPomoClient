@@ -21,13 +21,22 @@ public class PomoData implements Serializable {
     public PomoTimer getTimer() {
         return timer;
     }
+
     public HashMap<Date,ArrayList<PomoTimeUnit>> getTimeUnits() {
+        // only the start?
         return timeUnits;
     }
+    public PomoTimeUnit currentTimeUnit;
+
 
     public PomoData(){
         timeUnits = new HashMap<>();// TODO load recent pomodoros
         timeCategories.add(new TimeCategory("standard",null));
+        currentTimeUnit = new PomoTimeUnit(timer.getCurrentMaxTime(),timeCategories.get(0).getCategoryString());
+    }
+
+    public void setCurrentTimeUnit(PomoTimeUnit currentTimeUnit) {
+        this.currentTimeUnit = currentTimeUnit;
     }
 
     public ArrayList<TimeCategory> getTimeCategories(){

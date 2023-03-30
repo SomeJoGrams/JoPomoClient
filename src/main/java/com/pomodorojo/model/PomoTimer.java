@@ -1,14 +1,15 @@
 package com.pomodorojo.model;
 
 
+import java.io.Serializable;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Date;
 
-public class PomoTimer {
+public class PomoTimer implements Serializable{
 
     private LocalDate sessionStartDate; // keep the duration of the session on the server and in the settings as seconds!
-    private long currentPausedDuration;
     private int currentSessionUnit;
     public boolean isDuringPause;
     public boolean isDuringLongPause;
@@ -17,6 +18,12 @@ public class PomoTimer {
     private Duration currentShortBreakTime;
     private int maximumSessionUnits;
     private Duration currentLongBreakTime;
+
+
+    private Duration currentPausedDuration;
+    private LocalDate pauseStartDate;
+    private LocalDate pauseEndDate;
+
 
     /**
      *
@@ -28,7 +35,7 @@ public class PomoTimer {
      *
      */
     public PomoTimer(LocalDate currentSessionTime, boolean isPaused,long currentMaxTime,long currentShortBreakTime
-            ,long currentLongBreakTime,int currentSessionUnit,int currentPauseDuration,int maximumSessionUnits){
+            ,long currentLongBreakTime,int currentSessionUnit,Duration currentPauseDuration,int maximumSessionUnits){
         this.sessionStartDate = currentSessionTime;
         this.isPaused = isPaused;
         this.currentMaxTime = Duration.ofSeconds(currentMaxTime);
@@ -39,7 +46,7 @@ public class PomoTimer {
         this.maximumSessionUnits = maximumSessionUnits;
     }
 
-    public void setCurrentPausedDuration(long currentPausedDuration) {
+    public void setCurrentPausedDuration(Duration currentPausedDuration) {
         this.currentPausedDuration = currentPausedDuration;
     }
 
@@ -56,7 +63,19 @@ public class PomoTimer {
         this.maximumSessionUnits = maximumSessionUnits;
     }
 
-    public void togglePaused() {
+    public void togglePaused(Clock clock) {
+        if (!isPaused){
+            // safe the startDate on pause
+            pauseStartDate = LocalDate.now(clock);
+            isPaused = !isPaused;
+            return;
+        }
+        // safe the stopDate on rerun
+        pauseEndDate = LocalDate.now(clock);
+        // calculate the pausedDuration and fix the timer durations accordingly
+        currentPausedDuration = currentPausedDuration.plus(Duration.between(pauseStartDate,pauseEndDate));
+        pauseStartDate = null;
+        pauseEndDate = null;
         isPaused = !isPaused;
     }
 
@@ -99,7 +118,7 @@ public class PomoTimer {
     public boolean timeLimitReached(Clock clock){
         int limitReached;
         LocalDate curDate = LocalDate.now(clock);
-        Duration currentDuration = Duration.between(sessionStartDate,curDate);
+        Duration currentDuration = Duration.between(sessionStartDate,curDate).minus(currentPausedDuration);
         if (!isDuringPause && !isDuringLongPause){
             limitReached = currentDuration.compareTo(currentMaxTime); // f.e. the current duration is less -> negative value
         }
@@ -112,14 +131,19 @@ public class PomoTimer {
         return limitReached >= 0;
     }
 
-    public void next(){
+    public void next(Clock clock){
+        LocalDate curDate = LocalDate.now(clock);
+        currentPausedDuration = Duration.ZERO;
+        sessionStartDate = curDate;
         if (!isDuringPause && !isDuringLongPause){
             // either go into the long or the short pause depending on the amount of sessionUnits
-            isDuringPause = true;
             if (currentSessionUnit == maximumSessionUnits){
                 currentSessionUnit = 0;
                 isDuringPause = false;
                 isDuringLongPause = true;
+            }
+            else{
+                isDuringPause = true;
             }
         }
         else if (isDuringPause && !isDuringLongPause){
@@ -132,6 +156,31 @@ public class PomoTimer {
         }
     }
 
+    /**
+     * if we are currently in a break or paused during the break this allows us to continue
+     */
+    public void skipBreak(Clock clock){
+        this.next(clock);
+//        if (isDuringPause || isDuringLongPause){
+//            this.next(clock);
+//        }
+//        else{
+//            // TODO think about a thing that could be done here perhaps just dont add the skipped time!
+//        }
+//                if (isDuringPause || isDuringLongPause){
+//                    isDuringPause = false;
+//                    isDuringLongPause = false;
+//                }
+//                if (isPaused){
+//                    isPaused = false;
+//                    currentPausedDuration = Duration.ZERO;
+//
+//                }
+    }
+
+    public long getCurrentMaxTime() {
+        return currentMaxTime.getSeconds();
+    }
 }
 
 
