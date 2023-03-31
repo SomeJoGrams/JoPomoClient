@@ -1,6 +1,7 @@
 package com.pomodorojo.model;
 
 import java.io.Serializable;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ public class PomoData implements Serializable {
     private ArrayList<TimeCategory> timeCategories;
     private HashMap<Date,ArrayList<PomoTimeUnit>> timeUnits;// the day is mapped to the pomodoros of the day
     private TimeCategory currentCategory;
+    private PomoClock pomoClock;
+    public PomoTimeUnit currentTimeUnit;
     public UserSession getCurrentUserSession() {
         return currentUserSession;
     }
@@ -26,13 +29,19 @@ public class PomoData implements Serializable {
         // only the start?
         return timeUnits;
     }
-    public PomoTimeUnit currentTimeUnit;
+
 
 
     public PomoData(){
         timeUnits = new HashMap<>();// TODO load recent pomodoros
-        timeCategories.add(new TimeCategory("standard",null));
+        timeCategories = new ArrayList<>(); // TODO load time categories
+        timeCategories.add(new TimeCategory("standard",null)); // TODO set default categories
         currentTimeUnit = new PomoTimeUnit(timer.getCurrentMaxTime(),timeCategories.get(0).getCategoryString());
+        pomoClock = new PomoClock();
+    }
+
+    public PomoClock getPomoClock() {
+        return pomoClock;
     }
 
     public void setCurrentTimeUnit(PomoTimeUnit currentTimeUnit) {

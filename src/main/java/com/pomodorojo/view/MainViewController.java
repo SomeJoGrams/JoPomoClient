@@ -1,5 +1,7 @@
 package com.pomodorojo.view;
 
+import com.pomodorojo.controller.PomoController;
+import com.pomodorojo.controller.TimerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -12,10 +14,8 @@ import javafx.stage.Stage;
 
 public class MainViewController {
 
+    private PomoController pomoController;
     private Stage currentStage;
-
-
-
     @FXML
     private Button statisticsButton;
 
@@ -60,7 +60,8 @@ public class MainViewController {
 
     @FXML
     void onStartButtonClick(ActionEvent event) {
-
+        TimerController timerController = this.pomoController.getTimerController();
+        timerController.startTimer();
     }
 
     @FXML
@@ -104,11 +105,6 @@ public class MainViewController {
     }
 
     @FXML
-    void fbff00(ActionEvent event) {
-
-    }
-
-    @FXML
     void onExitButtonClick(ActionEvent event) {
         currentStage.close();
     }
@@ -118,8 +114,13 @@ public class MainViewController {
 
     }
 
+
+
     public void setCurrentStage(Stage stage){
         this.currentStage = stage;
     }
 
+    public void setPomoController(PomoController pomoController) {
+        this.pomoController = pomoController;
+    }
 }

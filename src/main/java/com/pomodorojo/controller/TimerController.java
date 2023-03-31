@@ -10,13 +10,17 @@ import java.time.Clock;
 public class TimerController {
     private PomoController pomoController;
 
-
     public TimerController(PomoController pomoController){
         this.pomoController = pomoController;
+        // TODO load the settings of the timer controller!
     }
-    public void startTimer(Clock clock){
+    public void startTimer(){
         // TODO when to load the previous timer state??,
         PomoData pomoData = pomoController.getPomoData();
+        if (!pomoData.getTimer().isPaused()){
+            return;
+        }
+        Clock clock = pomoData.getPomoClock();
         PomoTimer pomoTimer = pomoData.getTimer();
         if (pomoTimer.timeLimitReached(clock)){
             pomoTimer.next(clock);
@@ -26,8 +30,13 @@ public class TimerController {
         }
     }
 
-    public void pauseTimerToggle(Clock clock){ //TODO where to get the clock from
+    public void stopTimer(){
+        return;
+    }
+
+    public void pauseTimerToggle(){ //TODO where to get the clock from
         PomoData pomoData = pomoController.getPomoData();
+        Clock clock = pomoData.getPomoClock();
         PomoTimer pomoTimer = pomoData.getTimer();
         pomoTimer.togglePaused(clock);
     }

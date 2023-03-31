@@ -56,7 +56,7 @@ public class PomoController {
 
 
     public PomoController(){
-
+        this.timerController = new TimerController(this);
     }
 
 }
