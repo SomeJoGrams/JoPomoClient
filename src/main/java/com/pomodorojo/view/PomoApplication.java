@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -15,12 +16,13 @@ public class PomoApplication extends Application {
         Parent root = fxmlLoader.load();
 
         // let the main view now the stage to be able to close it and detect sizing and more events
-        MainViewController mainViewController = (MainViewController)fxmlLoader.getController();
+        MainViewController mainViewController = fxmlLoader.getController();
         mainViewController.setCurrentStage(stage);
 
         Scene scene = new Scene(root, 640, 480);
         stage.setTitle("Pomodoro");
         stage.setScene(scene);
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
 
 
