@@ -16,7 +16,6 @@ public class TimeDescription implements Serializable {
 
     public TimeDescription(char personalRating, TimeKind kind){
         this.personalRating = personalRating;
-        this.kind = kind;
     }
 
     public boolean addDescription(String description){

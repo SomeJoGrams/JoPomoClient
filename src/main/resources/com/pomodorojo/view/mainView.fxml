@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.pomodorojo.view.MainViewController">
+   <center>
+      <HBox alignment="CENTER" prefHeight="148.0" prefWidth="600.0">
+         <children>
+            <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+               </children>
+            </VBox>
+            <HBox prefHeight="234.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <SVGPath content="M 281.21,489.05           C 281.21,489.05 283.49,488.63 283.49,488.63             283.49,488.63 284.45,486.51 284.45,486.51             284.45,486.51 285.55,488.56 285.55,488.56             285.55,488.56 287.86,488.81 287.86,488.81             287.86,488.81 286.26,490.49 286.26,490.49             286.26,490.49 286.73,492.76 286.73,492.76             286.73,492.76 284.63,491.76 284.63,491.76             284.63,491.76 282.62,492.91 282.62,492.91             282.62,492.91 282.93,490.61 282.93,490.61             282.93,490.61 281.21,489.05 281.21,489.05 Z" fill="#fbff00" smooth="false" stroke="BLACK" />
+                           </children>
+                        </HBox>
+                        <Text fx:id="timer" strokeType="OUTSIDE" strokeWidth="0.0" text="24:15" textAlignment="CENTER" wrappingWidth="197.6708984375">
+                           <font>
+                              <Font size="64.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="20.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </center>
+   <top>
+      <VBox alignment="CENTER" prefHeight="105.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button fx:id="exitButton" mnemonicParsing="false" onAction="#onExitButtonClick" text="Exit" />
+              </items>
+            </ToolBar>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pomodoro" textAlignment="CENTER">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <HBox alignment="CENTER" prefHeight="26.0" prefWidth="600.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Currently:" wrappingWidth="102.0234375">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+                  <SplitMenuButton fx:id="categorySelection" mnemonicParsing="false" onAction="#onSplitMenuClicked" prefHeight="31.0" prefWidth="144.0" text="Learning">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                      <MenuItem mnemonicParsing="false" text="Action 2" />
+                    </items>
+                  </SplitMenuButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <bottom>
+      <VBox alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" prefHeight="66.0" prefWidth="600.0" spacing="5.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="30.0">
+                     <children>
+                        <Button fx:id="startTimerButton" mnemonicParsing="false" onAction="#onStartButtonClick" text="StartTimer" />
+                        <Button fx:id="pauseTimerButton" mnemonicParsing="false" onAction="#onPauseButtonClick" text="PauseTimer" />
+                     </children>
+                  </HBox>
+                  <Button fx:id="stopTimerButton" mnemonicParsing="false" onAction="#onStopButtonClick" text="StopTimer" />
+               </children>
+            </VBox>
+            <GridPane alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="108.0" prefWidth="600.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="540.0" minWidth="10.0" prefWidth="518.5" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="244.0" minWidth="10.0" prefWidth="81.5" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <VBox alignment="CENTER" prefHeight="179.0" prefWidth="122.0" spacing="10.0" GridPane.columnIndex="1">
+                     <children>
+                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#onSettingsButtonClicked" text="Settings" />
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClicked" text="Login" />
+                        <Button fx:id="statisticsButton" mnemonicParsing="false" onAction="#onStatisticsButtonClicked" text="Statistics" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="BOTTOM_CENTER" prefHeight="186.0" prefWidth="436.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="17.0" prefWidth="436.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rating:" />
+                              <Text fx:id="ratingValue" strokeType="OUTSIDE" strokeWidth="0.0" text="0/10" />
+                              <Slider fx:id="ratingSlider" onDragDetected="#onRatingDrag" onDragDone="#onRatingDragDone" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="21.0" prefWidth="436.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Interruptions:" />
+                              <Text fx:id="interruptionCount" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                           </children>
+                        </HBox>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" />
+                              <TextArea fx:id="descriptionField" onInputMethodTextChanged="#onDescriptionTextChanged" prefHeight="200.0" prefWidth="200.0" />
+                           </children>
+                        </VBox>
+                        <Text fx:id="userNameField" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" textAlignment="CENTER" wrappingWidth="106.6708984375">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+   </bottom>
+</BorderPane>
