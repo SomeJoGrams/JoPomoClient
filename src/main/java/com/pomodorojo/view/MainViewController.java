@@ -2,13 +2,13 @@ package com.pomodorojo.view;
 
 import com.pomodorojo.controller.PomoController;
 import com.pomodorojo.controller.TimerController;
+import com.pomodorojo.model.PomoData;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
-import javafx.scene.control.SplitMenuButton;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -50,13 +50,16 @@ public class MainViewController {
     private Text ratingValue;
 
     @FXML
-    private SplitMenuButton categorySelection;
+    private MenuButton categorySelection;
 
     @FXML
     private Slider ratingSlider;
 
     @FXML
     private Button stopTimerButton;
+
+    private SimpleIntegerProperty ratingProperty;
+
 
     @FXML
     void onStartButtonClick(ActionEvent event) {
@@ -81,7 +84,8 @@ public class MainViewController {
 
     @FXML
     void onLoginButtonClicked(ActionEvent event) {
-
+        ratingProperty.set(4);
+        System.out.println(ratingProperty.getValue());
     }
 
     @FXML
@@ -91,7 +95,6 @@ public class MainViewController {
 
     @FXML
     void onRatingDrag(ActionEvent event) {
-
     }
 
     @FXML
@@ -110,7 +113,7 @@ public class MainViewController {
     }
 
     @FXML
-    void onSplitMenuClicked(ActionEvent event) {
+    void onMenuButtonClicked(ActionEvent event) {
 
     }
 
@@ -120,7 +123,18 @@ public class MainViewController {
         this.currentStage = stage;
     }
 
-    public void setPomoController(PomoController pomoController) {
+    public void setPomoController(PomoController pomoController) { // init bindings
         this.pomoController = pomoController;
+        PomoData pomoData = pomoController.getPomoData();
+        ratingProperty = new SimpleIntegerProperty();
+        ratingValue.textProperty().bind(ratingProperty.asString());
+
+        categorySelection.getItems().setAll(pomoData.getTimeCategories());
+        categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
+
+        timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
     }
+
+
+
 }

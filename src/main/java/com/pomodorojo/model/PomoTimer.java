@@ -1,15 +1,19 @@
 package com.pomodorojo.model;
 
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import java.io.Serializable;
 import java.time.Clock;
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 public class PomoTimer implements Serializable{
 
-    private LocalDate sessionStartDate; // keep the duration of the session on the server and in the settings as seconds!
+    private Date sessionStartDate; // keep the duration of the session on the server and in the settings as seconds!
     private int currentSessionUnit;
     public boolean isDuringPause;
     public boolean isDuringLongPause;
@@ -18,25 +22,16 @@ public class PomoTimer implements Serializable{
     private Duration currentShortBreakTime;
     private int maximumSessionUnits;
     private Duration currentLongBreakTime;
-
-
     private Duration currentPausedDuration;
-    private LocalDate pauseStartDate;
-    private LocalDate pauseEndDate;
+    private Date lastPausedMeasuredDate;
+    private Date pauseStartDate;
+    private Date pauseEndDate;
+    private StringProperty displayedTime;
 
 
-    /**
-     *
-     * @param currentSessionTime
-     * @param isPaused
-     * @param currentMaxTime in seconds
-     * @param currentShortBreakTime in seconds
-     * @param currentLongBreakTime in seconds
-     *
-     */
-    public PomoTimer(LocalDate currentSessionTime, boolean isPaused,long currentMaxTime,long currentShortBreakTime
+    public PomoTimer(Date currentSessionTime, boolean isPaused,long currentMaxTime,long currentShortBreakTime
             ,long currentLongBreakTime,int currentSessionUnit,Duration currentPauseDuration,int maximumSessionUnits){
-        this.sessionStartDate = currentSessionTime;
+        this.sessionStartDate = Date.from(currentSessionTime.toInstant());
         this.isPaused = isPaused;
         this.currentMaxTime = Duration.ofSeconds(currentMaxTime);
         this.currentShortBreakTime = Duration.ofSeconds(currentShortBreakTime);
@@ -44,6 +39,22 @@ public class PomoTimer implements Serializable{
         this.currentSessionUnit = currentSessionUnit;
         this.currentPausedDuration = currentPauseDuration;
         this.maximumSessionUnits = maximumSessionUnits;
+        lastPausedMeasuredDate = new Date();
+        this.displayedTime = new SimpleStringProperty();
+    }
+
+    public PomoTimer(Clock clock){
+        this.sessionStartDate =Date.from(clock.instant());
+        this.isPaused = true;
+        this.currentMaxTime = Duration.ofMinutes(25); //Duration.ofSeconds(currentMaxTime);
+        this.currentShortBreakTime =  Duration.ofMinutes(5);
+        this.currentLongBreakTime =  Duration.ofMinutes(15);
+        this.currentSessionUnit = 0;
+        this.currentPausedDuration = Duration.ofSeconds(0);
+        this.maximumSessionUnits = 3;
+        this.displayedTime = new SimpleStringProperty();
+        lastPausedMeasuredDate = new Date();
+
     }
 
     public void setCurrentPausedDuration(Duration currentPausedDuration) {
@@ -65,15 +76,15 @@ public class PomoTimer implements Serializable{
 
     public void togglePaused(Clock clock) {
         if (!isPaused){
-            // safe the startDate on pause
-            pauseStartDate = LocalDate.now(clock);
+            //safe the startDate on pause
+            pauseStartDate = Date.from(clock.instant());
             isPaused = !isPaused;
             return;
         }
         // safe the stopDate on rerun
-        pauseEndDate = LocalDate.now(clock);
+        pauseEndDate = Date.from(clock.instant());
         // calculate the pausedDuration and fix the timer durations accordingly
-        currentPausedDuration = currentPausedDuration.plus(Duration.between(pauseStartDate,pauseEndDate));
+        currentPausedDuration = currentPausedDuration.plus(Duration.between(pauseStartDate.toInstant(),pauseEndDate.toInstant()));
         pauseStartDate = null;
         pauseEndDate = null;
         isPaused = !isPaused;
@@ -91,14 +102,14 @@ public class PomoTimer implements Serializable{
         this.currentLongBreakTime = currentLongBreakTime;
     }
 
-    /**
-     * this setter is not exposed, because it currentSessionUnit should only be changed internally
-     * @param currentSessionUnit
-     */
+    public StringProperty getDisplayedTimeProperty(){
+        return this.displayedTime;
+    }
+
     private void setCurrentSessionUnit(int currentSessionUnit){
         this.currentSessionUnit = currentSessionUnit;
     }
-    public LocalDate getTime(){
+    public Date getTime(){
         return sessionStartDate;
     }
 
@@ -117,8 +128,8 @@ public class PomoTimer implements Serializable{
      */
     public boolean timeLimitReached(Clock clock){
         int limitReached;
-        LocalDate curDate = LocalDate.now(clock);
-        Duration currentDuration = Duration.between(sessionStartDate,curDate).minus(currentPausedDuration);
+        Date curDate = Date.from(clock.instant());
+        Duration currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
         if (!isDuringPause && !isDuringLongPause){
             limitReached = currentDuration.compareTo(currentMaxTime); // f.e. the current duration is less -> negative value
         }
@@ -132,9 +143,10 @@ public class PomoTimer implements Serializable{
     }
 
     public void next(Clock clock){
-        LocalDate curDate = LocalDate.now(clock);
+        Date curDate = Date.from(clock.instant());
         currentPausedDuration = Duration.ZERO;
         sessionStartDate = curDate;
+        isPaused = false;
         if (!isDuringPause && !isDuringLongPause){
             // either go into the long or the short pause depending on the amount of sessionUnits
             if (currentSessionUnit == maximumSessionUnits){
@@ -181,6 +193,55 @@ public class PomoTimer implements Serializable{
     public long getCurrentMaxTime() {
         return currentMaxTime.getSeconds();
     }
+
+    public void calculateCurrentSessionTime(Clock clock){
+        Date curDate = Date.from(clock.instant());
+        Duration currentDuration;
+        if (!isPaused){
+            currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
+        }
+        else{
+            currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(),curDate.toInstant()));
+            currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
+            lastPausedMeasuredDate = curDate;
+        }
+        updateDisplayedTime(clock,currentDuration);
+    }
+
+    public void initSessionTime(Clock clock){// TODO should also load old values
+        updateDisplayedTime(clock,currentMaxTime);
+    }
+
+    public void updateDisplayedTime(Clock clock, Duration duration){
+        StringBuilder stringBuilder = new StringBuilder();
+        String zeroString = "0";
+        String minutes = String.valueOf(duration.toMinutesPart());
+        String seconds = String.valueOf(duration.toSecondsPart());
+        if (minutes.length() == 1){
+            stringBuilder.append(zeroString);
+            stringBuilder.append(minutes);
+        }
+        else{
+            stringBuilder.append(minutes);
+        }
+        stringBuilder.append(":");
+        if (seconds.length() == 1){
+            stringBuilder.append(zeroString);
+            stringBuilder.append(seconds);
+        }
+        else{
+            stringBuilder.append(seconds);
+        }
+        this.displayedTime.set(stringBuilder.toString());
+    }
+
+    public void resetTimer(Clock clock){
+        isPaused = true;
+        this.sessionStartDate = null;
+        this.currentPausedDuration = Duration.ZERO;
+
+    }
+
 }
 
 

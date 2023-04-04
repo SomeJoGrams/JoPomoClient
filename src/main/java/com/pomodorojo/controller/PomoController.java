@@ -56,6 +56,8 @@ public class PomoController {
 
 
     public PomoController(){
+        this.pomoData = new PomoData(); // should always be initialized first with the load controller!
+
         this.timerController = new TimerController(this);
     }
 

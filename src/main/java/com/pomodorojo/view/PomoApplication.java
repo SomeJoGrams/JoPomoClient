@@ -27,7 +27,6 @@ public class PomoApplication extends Application {
 
 
 
-
         Scene scene = new Scene(root, 640, 480);
         stage.setTitle("Pomodoro");
         stage.setScene(scene);

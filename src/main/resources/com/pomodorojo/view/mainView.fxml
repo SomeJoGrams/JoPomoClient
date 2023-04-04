@@ -7,8 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.pomodorojo.view.MainViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pomodorojo.view.MainViewController">
    <center>
       <HBox alignment="CENTER" prefHeight="148.0" prefWidth="600.0">
          <children>
@@ -87,12 +86,7 @@
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <SplitMenuButton fx:id="categorySelection" mnemonicParsing="false" onAction="#onSplitMenuClicked" prefHeight="31.0" prefWidth="144.0" text="Learning">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                  </SplitMenuButton>
+                  <MenuButton fx:id="categorySelection" mnemonicParsing="false" onAction="#onMenuButtonClicked" text="MenuButton" />
                </children>
             </HBox>
          </children>
