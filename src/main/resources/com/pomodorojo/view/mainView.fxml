@@ -69,7 +69,7 @@
    <top>
       <VBox alignment="CENTER" prefHeight="105.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+            <ToolBar fx:id="windowTopBar" nodeOrientation="RIGHT_TO_LEFT" onDragDetected="#onWindowDrag" onMouseDragged="#onMouseDrag" prefHeight="40.0" prefWidth="200.0">
               <items>
                 <Button fx:id="exitButton" mnemonicParsing="false" onAction="#onExitButtonClick" text="Exit" />
               </items>

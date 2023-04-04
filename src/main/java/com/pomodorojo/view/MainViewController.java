@@ -3,12 +3,14 @@ package com.pomodorojo.view;
 import com.pomodorojo.controller.PomoController;
 import com.pomodorojo.controller.TimerController;
 import com.pomodorojo.model.PomoData;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -58,8 +60,13 @@ public class MainViewController {
     @FXML
     private Button stopTimerButton;
 
-    private SimpleIntegerProperty ratingProperty;
+    @FXML
+    private ToolBar windowTopBar;
 
+    private SimpleIntegerProperty ratingProperty;
+    private double xStartPosition;
+    private double yStartPosition;
+    private boolean isDragging;
 
     @FXML
     void onStartButtonClick(ActionEvent event) {
@@ -117,7 +124,30 @@ public class MainViewController {
 
     }
 
+//    @FXML
+//    void onWindowDragDone(DragEvent event){
+//        isDragging = false;
+//        xStartPosition = 0;
+//        yStartPosition = 0;
+//        System.out.println("ended");
+//    }
 
+    @FXML
+    void onWindowDrag(MouseEvent event){
+        isDragging = true;
+        xStartPosition = event.getScreenX();
+        yStartPosition = event.getScreenY();
+    }
+
+    @FXML
+    public void onMouseDrag(MouseEvent event){
+        if (isDragging) {
+            currentStage.setX(currentStage.getX() + event.getScreenX() - xStartPosition);
+            currentStage.setY(currentStage.getY() + event.getScreenY() - yStartPosition);
+            xStartPosition = event.getScreenX();
+            yStartPosition = event.getScreenY();
+        }
+    }
 
     public void setCurrentStage(Stage stage){
         this.currentStage = stage;
@@ -133,6 +163,11 @@ public class MainViewController {
         categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
 
         timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
+        this.currentStage.addEventHandler(MouseEvent.MOUSE_RELEASED, event ->{
+            isDragging = false;
+//            System.out.println("ended");
+        });
+
     }
 
 
