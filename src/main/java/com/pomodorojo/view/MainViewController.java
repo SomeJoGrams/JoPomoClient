@@ -76,7 +76,8 @@ public class MainViewController {
 
     @FXML
     void onPauseButtonClick(ActionEvent event) {
-
+        TimerController timerController = this.pomoController.getTimerController();
+        timerController.pauseTimerToggle();
     }
 
     @FXML
@@ -117,6 +118,7 @@ public class MainViewController {
     @FXML
     void onExitButtonClick(ActionEvent event) {
         currentStage.close();
+
     }
 
     @FXML
@@ -124,19 +126,18 @@ public class MainViewController {
 
     }
 
-//    @FXML
-//    void onWindowDragDone(DragEvent event){
-//        isDragging = false;
-//        xStartPosition = 0;
-//        yStartPosition = 0;
-//        System.out.println("ended");
-//    }
-
     @FXML
     void onWindowDrag(MouseEvent event){
         isDragging = true;
         xStartPosition = event.getScreenX();
         yStartPosition = event.getScreenY();
+    }
+
+    @FXML
+    void onMouseReleased(MouseEvent event){
+        isDragging = false;
+        xStartPosition = 0;
+        yStartPosition = 0;
     }
 
     @FXML
@@ -148,6 +149,8 @@ public class MainViewController {
             yStartPosition = event.getScreenY();
         }
     }
+
+
 
     public void setCurrentStage(Stage stage){
         this.currentStage = stage;
@@ -163,10 +166,12 @@ public class MainViewController {
         categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
 
         timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
-        this.currentStage.addEventHandler(MouseEvent.MOUSE_RELEASED, event ->{
-            isDragging = false;
-//            System.out.println("ended");
-        });
+//        this.currentStage.addEventHandler(MouseEvent.MOUSE_RELEASED, event ->{
+//            isDragging = false;
+//            xStartPosition = 0;
+//            yStartPosition = 0;
+//            System.out.println("mouse released");
+//        });
 
     }
 

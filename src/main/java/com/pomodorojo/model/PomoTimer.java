@@ -54,7 +54,6 @@ public class PomoTimer implements Serializable{
         this.maximumSessionUnits = 3;
         this.displayedTime = new SimpleStringProperty();
         lastPausedMeasuredDate = new Date();
-
     }
 
     public void setCurrentPausedDuration(Duration currentPausedDuration) {
@@ -84,7 +83,9 @@ public class PomoTimer implements Serializable{
         // safe the stopDate on rerun
         pauseEndDate = Date.from(clock.instant());
         // calculate the pausedDuration and fix the timer durations accordingly
-        currentPausedDuration = currentPausedDuration.plus(Duration.between(pauseStartDate.toInstant(),pauseEndDate.toInstant()));
+        if (pauseStartDate != null){
+            currentPausedDuration = currentPausedDuration.plus(Duration.between(pauseStartDate.toInstant(),pauseEndDate.toInstant()));
+        }
         pauseStartDate = null;
         pauseEndDate = null;
         isPaused = !isPaused;
@@ -199,10 +200,12 @@ public class PomoTimer implements Serializable{
         Duration currentDuration;
         if (!isPaused){
             currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
+            currentDuration = currentMaxTime.minus(currentDuration);
         }
         else{
             currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(),curDate.toInstant()));
             currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
+            currentDuration = currentMaxTime.minus(currentDuration);
             lastPausedMeasuredDate = curDate;
         }
         updateDisplayedTime(clock,currentDuration);

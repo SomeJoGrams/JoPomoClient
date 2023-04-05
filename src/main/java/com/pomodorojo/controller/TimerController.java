@@ -81,7 +81,11 @@ public class TimerController {
         TimerTask timeUpdate = new TimerTask() {
             @Override
             public void run() {
-                pomoController.getPomoData().getTimer().calculateCurrentSessionTime(clock);
+                PomoTimer pomoTimer = pomoController.getPomoData().getTimer();
+                pomoTimer.calculateCurrentSessionTime(clock);
+                if (pomoTimer.timeLimitReached(clock)){
+                    pomoTimer.next(clock); // go inside the break, TODO should somehow update UI
+                }
             }
         };
         taskTimerScheduler.scheduleAtFixedRate(timeUpdate,0,990); // we choose a time smaller than 1 second so that we dont skip a second
