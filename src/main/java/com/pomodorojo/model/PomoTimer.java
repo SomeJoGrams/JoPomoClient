@@ -1,6 +1,8 @@
 package com.pomodorojo.model;
 
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -14,13 +16,13 @@ import java.util.Date;
 public class PomoTimer implements Serializable{
 
     private Date sessionStartDate; // keep the duration of the session on the server and in the settings as seconds!
-    private int currentSessionUnit;
+    private SimpleIntegerProperty currentSessionUnit;
     public boolean isDuringPause;
     public boolean isDuringLongPause;
     private boolean isPaused;
     private Duration currentMaxTime; // given in minutes
     private Duration currentShortBreakTime;
-    private int maximumSessionUnits;
+    private SimpleIntegerProperty maximumSessionUnits;
     private Duration currentLongBreakTime;
     private Duration currentPausedDuration;
     private Date lastPausedMeasuredDate;
@@ -35,9 +37,9 @@ public class PomoTimer implements Serializable{
         this.currentMaxTime = Duration.ofSeconds(currentMaxTime);
         this.currentShortBreakTime = Duration.ofSeconds(currentShortBreakTime);
         this.currentLongBreakTime = Duration.ofSeconds(currentLongBreakTime);
-        this.currentSessionUnit = currentSessionUnit;
+        this.currentSessionUnit = new SimpleIntegerProperty(currentSessionUnit);
         this.currentPausedDuration = currentPauseDuration;
-        this.maximumSessionUnits = maximumSessionUnits;
+        this.maximumSessionUnits = new SimpleIntegerProperty(maximumSessionUnits);
         lastPausedMeasuredDate = new Date();
         this.displayedTime = new SimpleStringProperty();
     }
@@ -48,9 +50,9 @@ public class PomoTimer implements Serializable{
         this.currentMaxTime = Duration.ofMinutes(25); //Duration.ofSeconds(currentMaxTime);
         this.currentShortBreakTime =  Duration.ofMinutes(5);
         this.currentLongBreakTime =  Duration.ofMinutes(15);
-        this.currentSessionUnit = 0;
+        this.currentSessionUnit = new SimpleIntegerProperty(0);
         this.currentPausedDuration = Duration.ofSeconds(0);
-        this.maximumSessionUnits = 3;
+        this.maximumSessionUnits = new SimpleIntegerProperty(3);
         this.displayedTime = new SimpleStringProperty();
         lastPausedMeasuredDate = null;
     }
@@ -69,7 +71,7 @@ public class PomoTimer implements Serializable{
 
     public void setMaximumSessionUnits(int maximumSessionUnits){
         // TODO maybe put the maximum check here? like an absolute maximum of 500 idk
-        this.maximumSessionUnits = maximumSessionUnits;
+        this.maximumSessionUnits.set(maximumSessionUnits);
     }
 
 
@@ -95,7 +97,7 @@ public class PomoTimer implements Serializable{
     }
 
     private void setCurrentSessionUnit(int currentSessionUnit){
-        this.currentSessionUnit = currentSessionUnit;
+        this.currentSessionUnit.set(currentSessionUnit);
     }
     public Date getTime(){
         return sessionStartDate;
@@ -105,6 +107,17 @@ public class PomoTimer implements Serializable{
         return isPaused;
     }
 
+    public long getCurrentMaxTime() {
+        return currentMaxTime.getSeconds();
+    }
+
+    public IntegerProperty getMaxProperty(){
+        return this.maximumSessionUnits;
+    }
+
+    public IntegerProperty getUnitProperty(){
+        return this.currentSessionUnit;
+    }
 
     /**
      * check for the end of a time "session"
@@ -141,8 +154,8 @@ public class PomoTimer implements Serializable{
         isPaused = false;
         if (!isDuringPause && !isDuringLongPause){
             // either go into the long or the short pause depending on the amount of sessionUnits
-            if (currentSessionUnit == maximumSessionUnits){
-                currentSessionUnit = 0;
+            if (currentSessionUnit.get() == maximumSessionUnits.get()){
+                currentSessionUnit.set(0);
                 isDuringPause = false;
                 isDuringLongPause = true;
             }
@@ -152,11 +165,11 @@ public class PomoTimer implements Serializable{
         }
         else if (isDuringPause && !isDuringLongPause){
             isDuringPause = false;
-            currentSessionUnit += 1;
+            currentSessionUnit.add(1);
         }
         else{// is DuringLongPause
             isDuringLongPause = false;
-            currentSessionUnit += 1;
+            currentSessionUnit.add(1);
         }
     }
 
@@ -182,9 +195,6 @@ public class PomoTimer implements Serializable{
 //                }
     }
 
-    public long getCurrentMaxTime() {
-        return currentMaxTime.getSeconds();
-    }
 
     public void togglePaused(Clock clock) {
 //        if (!isPaused){
@@ -267,7 +277,7 @@ public class PomoTimer implements Serializable{
         isPaused = true;
         isDuringPause = false;
         isDuringLongPause = false;
-        currentSessionUnit = 0;
+        currentSessionUnit.set(0);
         sessionStartDate = null;
         currentPausedDuration = Duration.ZERO;
         lastPausedMeasuredDate = null;

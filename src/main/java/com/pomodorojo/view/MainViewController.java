@@ -4,14 +4,21 @@ import com.pomodorojo.controller.PomoController;
 import com.pomodorojo.controller.TimerController;
 import com.pomodorojo.model.PomoData;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class MainViewController {
@@ -63,10 +70,10 @@ public class MainViewController {
     @FXML
     private ToolBar windowTopBar;
 
-    private SimpleIntegerProperty ratingProperty;
-    private double xStartPosition;
-    private double yStartPosition;
-    private boolean isDragging;
+    private VBox finishedUnitSum;
+    @FXML
+    private HBox unitView;
+
 
     @FXML
     void onStartButtonClick(ActionEvent event) {
@@ -93,8 +100,7 @@ public class MainViewController {
 
     @FXML
     void onLoginButtonClicked(ActionEvent event) {
-        ratingProperty.set(4);
-        System.out.println(ratingProperty.getValue());
+
     }
 
     @FXML
@@ -150,14 +156,59 @@ public class MainViewController {
             yStartPosition = event.getScreenY();
         }
     }
+    private SimpleIntegerProperty ratingProperty;
+    private double xStartPosition;
+    private double yStartPosition;
+    private boolean isDragging;
+    private double unitXSize;
+    private double unitYSize;
 
+    private ChangeListener<Number> maxUnitListener;
+    private ChangeListener<Number> unitListener;
 
+    public void addMaxUnits(){
+        PomoData pomoData = this.pomoController.getPomoData();
+        unitXSize = unitView.getPrefWidth() /  pomoData.getTimer().getMaxProperty().doubleValue();
+        unitYSize = unitView.getPrefHeight();
+        double smallerSize = Math.min(unitXSize, unitYSize) / 2;
+        for (int newElement = 0; newElement < pomoData.getTimer().getMaxProperty().get(); newElement++) {
+            unitView.getChildren().add(new Circle(smallerSize));
+            unitView.getChildren().forEach(node ->{
+                ((Circle) node).setStyle("-fx-fill:" + "DODGERBLUE;" + "-fx-stroke:" + "BLACK;" + "-fx-strokeType:" +"INSIDE;");
+            });
+        }
+
+    }
+
+    public void updateUnitVisibility(){
+        PomoData pomoData = this.pomoController.getPomoData();
+        int currentUnits = pomoData.getTimer().getUnitProperty().get();
+        // only make the completed units visible
+        unitView.getChildren().forEach(node -> node.setVisible(false));
+        unitView.getChildren().stream().limit(currentUnits).forEach(node ->
+            node.setVisible(true)
+        );
+    }
+
+    public void addUnitListener() {
+        PomoData pomoData = this.pomoController.getPomoData();
+        pomoData.getTimer().getMaxProperty().addListener(new WeakChangeListener<>(
+                maxUnitListener
+        ));
+        pomoData.getTimer().getUnitProperty().addListener(new WeakChangeListener<>(
+            unitListener
+        ));
+    }
 
     public void setCurrentStage(Stage stage){
         this.currentStage = stage;
     }
 
-    public void setPomoController(PomoController pomoController) { // init bindings
+    /**
+     * init bindings and private variables
+     * @param pomoController
+     */
+    public void setPomoController(PomoController pomoController) {
         this.pomoController = pomoController;
         PomoData pomoData = pomoController.getPomoData();
         ratingProperty = new SimpleIntegerProperty();
@@ -167,6 +218,39 @@ public class MainViewController {
         categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
 
         timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
+
+        // convert the max unit to circles
+        maxUnitListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                unitXSize = unitView.getPrefWidth() / newValue.doubleValue();
+                unitYSize = unitView.getPrefHeight();
+                double smallerSize = Math.min(unitXSize, unitYSize);
+                if (oldValue.intValue() < newValue.intValue()) {
+                    for (int newElement = 0; newElement < newValue.intValue() - oldValue.intValue(); newElement++) {
+                        unitView.getChildren().add(new Circle(smallerSize));
+                    }
+                } else {
+                    int rangeStart = Math.max(newValue.intValue(), unitView.getChildren().size() - 1);
+                    unitView.getChildren().remove(rangeStart, oldValue.intValue());
+                }
+                unitView.getChildren().forEach( node -> {
+                    ((Circle)node).setRadius(smallerSize);
+                });
+                // only display the units that have to be displayed
+                updateUnitVisibility();
+            }
+        };
+        unitListener =  new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                System.out.println("changing value");
+                updateUnitVisibility();
+            }
+        };
+        addMaxUnits();
+        updateUnitVisibility();
+        addUnitListener();
     }
 
 
