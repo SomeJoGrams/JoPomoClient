@@ -82,7 +82,8 @@ public class MainViewController {
 
     @FXML
     void onStopButtonClick(ActionEvent event) {
-
+        TimerController timerController = this.pomoController.getTimerController();
+        timerController.stopTimer();
     }
 
     @FXML
@@ -166,13 +167,6 @@ public class MainViewController {
         categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
 
         timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
-//        this.currentStage.addEventHandler(MouseEvent.MOUSE_RELEASED, event ->{
-//            isDragging = false;
-//            xStartPosition = 0;
-//            yStartPosition = 0;
-//            System.out.println("mouse released");
-//        });
-
     }
 
 

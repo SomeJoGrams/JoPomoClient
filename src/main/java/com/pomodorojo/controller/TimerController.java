@@ -20,6 +20,7 @@ public class TimerController {
         // TODO load the settings of the timer controller!
         //this.pomoController.getPomoData().getTimer().calculateCurrentSessionTime(pomoData.getPomoClock());
         this.pomoController.getPomoData().getTimer().initSessionTime(pomoData.getPomoClock());
+
         createTimerTask();
     }
     public void startTimer(){
@@ -30,7 +31,8 @@ public class TimerController {
             return;
         }
         Clock clock = pomoData.getPomoClock();
-        pomoTimer.togglePaused(clock);
+        pomoTimer.createStartDate(clock);
+        pomoTimer.startSession(clock);
         if (pomoTimer.timeLimitReached(clock)){ // add logic to additionally add unfinished minutes
             pomoTimer.next(clock);
         }
