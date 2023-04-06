@@ -100,7 +100,7 @@ public class MainViewController {
 
     @FXML
     void onLoginButtonClicked(ActionEvent event) {
-
+        SystemNotificationController.displayNotification("login started");
     }
 
     @FXML
@@ -251,6 +251,12 @@ public class MainViewController {
         addMaxUnits();
         updateUnitVisibility();
         addUnitListener();
+
+
+        // load tray Symobl and Notification
+        SystemNotificationController systemNotificationController = new SystemNotificationController();
+        systemNotificationController.addSystemTraySymbol();
+
     }
 
 

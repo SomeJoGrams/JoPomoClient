@@ -43,7 +43,7 @@ public class PomoData implements Serializable {
         pomoClock = new PomoClock();
         timeUnits = new HashMap<>();// TODO load recent pomodoros
         timeCategories = new ArrayList<TimeCategory>();
-        timeCategories.add(new TimeCategory("standard",null)); // TODO set default categories Imoprtant do not edit the time categories directly!
+        timeCategories.add(new TimeCategory("Standard",null)); // TODO set default categories Imoprtant do not edit the time categories directly!
         observableTimeCategories = FXCollections.observableList(timeCategories);
         timer = new PomoTimer(pomoClock);
 //        currentTimeUnit = new PomoTimeUnit(timer.getCurrentMaxTime(),timeCategories.get(0).getCategoryString());
