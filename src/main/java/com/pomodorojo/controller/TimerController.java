@@ -59,7 +59,7 @@ public class TimerController {
     }
     public void attachTimerDescription(String description,int personalRating,String reward){
         PomoData pomoData = pomoController.getPomoData();
-        TimeDescription currentTimeDescription = pomoData.currentTimeUnit.getTimeDescription();
+        TimeDescription currentTimeDescription = pomoData.getCurrentTimeUnit().getTimeDescription();
         if (currentTimeDescription == null){
             currentTimeDescription = new TimeDescription();
         }
@@ -74,7 +74,7 @@ public class TimerController {
      */
     public void updateTimerDescription(String description){
         PomoData pomoData = pomoController.getPomoData();
-        TimeDescription currentTimeDescription = pomoData.currentTimeUnit.getTimeDescription();
+        TimeDescription currentTimeDescription = pomoData.getCurrentTimeUnit().getTimeDescription();
         currentTimeDescription.setDescription(description);
     }
 

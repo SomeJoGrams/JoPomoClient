@@ -71,7 +71,7 @@ public class StateController {
                 BufferedInputStream bufferedFileOutStream = new BufferedInputStream(fInStream);
                 ObjectInputStream inputStream = new ObjectInputStream(bufferedFileOutStream);
                 curPomoData = (PomoData) inputStream.readObject();
-                inputStream.close()
+                inputStream.close();
             }
             catch (IOException e){
                 System.err.println("could not read a state");

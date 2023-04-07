@@ -73,7 +73,9 @@ public class PomoData implements Serializable { // TODO make Externalizable
         return currentTimeCategory.textProperty();
     }
 
-
+    public PomoTimeUnit getCurrentTimeUnit(){
+        return this.currentTimeUnit;
+    }
     public ClientType getClientType() {
         return this.clientType;
     }
