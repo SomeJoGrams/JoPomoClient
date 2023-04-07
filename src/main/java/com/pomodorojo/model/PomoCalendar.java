@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class PomoCalendar implements Serializable {
     private Date startDate;
-
     private Date endDate;
 
     private long timeLength;

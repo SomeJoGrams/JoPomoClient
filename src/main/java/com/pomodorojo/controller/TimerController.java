@@ -10,8 +10,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class TimerController {
-    private PomoController pomoController;
-    private Timer taskTimerScheduler;
+    private final PomoController pomoController;
+    private final Timer taskTimerScheduler;
 
     public TimerController(PomoController pomoController){
         this.pomoController = pomoController;

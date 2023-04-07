@@ -1,5 +1,6 @@
 package com.pomodorojo.model;
 
 public enum ClientType {
-    PCCLIENT;
+    PCCLIENTWINDOWS10,
+    PCCLIENTUBUNTU; // for unix based sytems
 }

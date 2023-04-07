@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.TimeZone;
 
-public class PomoClock extends Clock implements Serializable {
+public class PomoClock extends Clock {
 
 
     @Override

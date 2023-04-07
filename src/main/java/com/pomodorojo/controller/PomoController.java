@@ -12,6 +12,9 @@ public class PomoController {
     private SettingsController settingsController;
     private AudioController audioController;
     private NetworkController networkController;
+    private StateController stateController;
+    private ClientController clientController;
+
     private PomoData pomoData;
 
     public TimerController getTimerController() {
@@ -54,11 +57,26 @@ public class PomoController {
         return networkController;
     }
 
+    public StateController getStateController(){return stateController;}
+
+    public ClientController getClientController(){return clientController;}
 
     public PomoController(){
-        this.pomoData = new PomoData(); // should always be initialized first with the load controller!
+
+        // client controller should always be crated before every other controller, in order
+        // to let that controllers read the right settings
+        this.clientController = new ClientController(this);
+
+        this.stateController = new StateController(this);
+
+        this.stateController.loadState();
+
 
         this.timerController = new TimerController(this);
     }
 
+
+    public void setPomoData(PomoData curPomoData) {
+        this.pomoData = curPomoData;
+    }
 }
