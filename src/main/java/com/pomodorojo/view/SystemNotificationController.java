@@ -13,6 +13,8 @@ public class SystemNotificationController {
 
         private TrayIcon trayIcon;
 
+        private SystemTray tray;
+
         public SystemNotificationController(){
             trayIcon = null;
         }
@@ -29,7 +31,7 @@ public class SystemNotificationController {
         public void addSystemTraySymbol(){
             if (SystemTray.isSupported()) {
                 // get the SystemTray instance
-                SystemTray tray = SystemTray.getSystemTray();
+                tray = SystemTray.getSystemTray();
                 // load an image
                 // TODO get system icon size
                 Image image = Toolkit.getDefaultToolkit().getImage(PomoApplication.class.getResource("TimerSymbol16x16.png"));
@@ -62,10 +64,17 @@ public class SystemNotificationController {
             } else {
                 // disable tray option in your application or
                 // perform other actions
+
             }
+
             // the application state has changed - update the image
 //            if (trayIcon != null) {
 //                trayIcon.setImage(updatedImage);
 //            }
+
         }
+        public void removeTraySymbol(){
+            tray.remove(trayIcon);
+        }
+
 }

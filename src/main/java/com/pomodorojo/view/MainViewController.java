@@ -3,6 +3,7 @@ package com.pomodorojo.view;
 import com.pomodorojo.controller.PomoController;
 import com.pomodorojo.controller.TimerController;
 import com.pomodorojo.model.PomoData;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -124,8 +125,7 @@ public class MainViewController {
 
     @FXML
     void onExitButtonClick(ActionEvent event) {
-        currentStage.close();
-
+        Platform.exit();
     }
 
     @FXML
@@ -166,6 +166,8 @@ public class MainViewController {
     private ChangeListener<Number> maxUnitListener;
     private ChangeListener<Number> unitListener;
 
+    private SystemNotificationController systemNotificationController;
+
     public void addMaxUnits(){
         PomoData pomoData = this.pomoController.getPomoData();
         unitXSize = unitView.getPrefWidth() /  pomoData.getTimer().getMaxProperty().doubleValue();
@@ -204,6 +206,10 @@ public class MainViewController {
         this.currentStage = stage;
     }
 
+
+    public void closeViewThreads(){
+        systemNotificationController.removeTraySymbol();
+    }
     /**
      * init bindings and private variables
      * @param pomoController
@@ -254,7 +260,7 @@ public class MainViewController {
 
 
         // load tray Symobl and Notification
-        SystemNotificationController systemNotificationController = new SystemNotificationController();
+        systemNotificationController = new SystemNotificationController();
         systemNotificationController.addSystemTraySymbol();
 
     }

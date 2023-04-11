@@ -74,6 +74,11 @@ public class PomoController {
 
 
         this.timerController = new TimerController(this);
+
+    }
+
+    public void cancel(){
+        this.timerController.cancel();
     }
 
 
