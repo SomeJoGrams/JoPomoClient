@@ -26,21 +26,23 @@ public class PomoApplication extends Application {
         mainViewController.setPomoController(pomoController);
 
 
-
         Scene scene = new Scene(root, 600, 400);
         stage.setTitle("Pomodoro");
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
 
+        stage.setOnCloseRequest(event -> {
+            this.pomoController.getStateController().safeState();
+        });
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch();
     }
 
     public void createPomodoro(){
         pomoController = new PomoController();
     }
 
-
-    public static void main(String[] args) {
-        launch();
-    }
 }

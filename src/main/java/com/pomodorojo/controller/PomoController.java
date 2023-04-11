@@ -25,9 +25,6 @@ public class PomoController {
         return loginController;
     }
 
-    public PomoData getPomoData() {
-        return pomoData;
-    }
 
     public IOController getIoController() {
         return ioController;
@@ -60,6 +57,10 @@ public class PomoController {
     public StateController getStateController(){return stateController;}
 
     public ClientController getClientController(){return clientController;}
+
+    public PomoData getPomoData() {
+        return pomoData;
+    }
 
     public PomoController(){
 

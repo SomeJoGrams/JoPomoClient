@@ -96,7 +96,6 @@ public class MainViewController {
 
     @FXML
     void onSettingsButtonClicked(ActionEvent event) {
-
     }
 
     @FXML
@@ -217,6 +216,7 @@ public class MainViewController {
 
         categorySelection.getItems().setAll(pomoData.getTimeCategories());
         categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
+
 
         timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
 

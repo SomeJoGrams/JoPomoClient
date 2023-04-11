@@ -2,6 +2,7 @@ package com.pomodorojo.controller;
 
 import com.pomodorojo.model.ClientType;
 import com.pomodorojo.model.PomoData;
+import com.pomodorojo.model.TimeCategory;
 
 
 import java.io.*;
@@ -14,10 +15,12 @@ public class StateController {
     private Path programCacheDir;
     private FileSystem fileSystem;
     private WatchKey dirWatchKey;
+
+    private static final String statePath = "pomoState.bin";
     public StateController(PomoController pomoController){
         this.pomoController = pomoController;
         String homeDirectory;
-        if (pomoController.getPomoData().getClientType() == ClientType.PCCLIENTWINDOWS10){
+        if (pomoController.getClientController().getClientType() == ClientType.PCCLIENTWINDOWS10){
             homeDirectory = System.getenv("APPDATA");
             System.out.println(homeDirectory);
         }
@@ -59,6 +62,7 @@ public class StateController {
      * attempts to load previous states of the PomoData application and creates it for the PomoController
      */
     public void loadState(){
+        System.out.println("loading the state");
         // TODO load some of the state from the online database, compare versions
         File[] cacheFiles = this.programCacheDir.toFile().listFiles();
         PomoData curPomoData = null;
@@ -67,7 +71,7 @@ public class StateController {
         }
         else{// attempt to de-serialize
             try {
-                FileInputStream fInStream = new FileInputStream("pomoState.bin");
+                FileInputStream fInStream = new FileInputStream( new File(this.programCacheDir.toString(),statePath));
                 BufferedInputStream bufferedFileOutStream = new BufferedInputStream(fInStream);
                 ObjectInputStream inputStream = new ObjectInputStream(bufferedFileOutStream);
                 curPomoData = (PomoData) inputStream.readObject();
@@ -83,11 +87,17 @@ public class StateController {
             curPomoData = new PomoData();
         }
         this.pomoController.setPomoData(curPomoData);
+        for (TimeCategory timeCategory : curPomoData.getTimeCategories()){
+            System.out.println(timeCategory.toString());
+        }
+        System.out.println(curPomoData.getCurrentTimeCategoryProperty().get());
+
     }
 
     public void safeState(){
+        System.out.println("saving the state");
         try {
-            FileOutputStream fOutStream = new FileOutputStream("pomoState.bin");
+            FileOutputStream fOutStream = new FileOutputStream(new File(this.programCacheDir.toString(),statePath));
             BufferedOutputStream bufferedFileOutStream = new BufferedOutputStream(fOutStream);
             ObjectOutputStream outputStream = new ObjectOutputStream(bufferedFileOutStream);
             outputStream.writeObject(this.pomoController.getPomoData());

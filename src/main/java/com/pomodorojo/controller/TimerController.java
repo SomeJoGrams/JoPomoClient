@@ -1,9 +1,6 @@
 package com.pomodorojo.controller;
 
-import com.pomodorojo.model.PomoData;
-import com.pomodorojo.model.PomoTimer;
-import com.pomodorojo.model.TimeDescription;
-import com.pomodorojo.model.TimeKind;
+import com.pomodorojo.model.*;
 
 import java.time.Clock;
 import java.util.Timer;
@@ -74,6 +71,9 @@ public class TimerController {
      */
     public void updateTimerDescription(String description){
         PomoData pomoData = pomoController.getPomoData();
+        if (pomoData.getCurrentTimeUnit() == null){
+            //pomoData.setCurrentTimeUnit(new PomoTimeUnit()); // TODO read the time unit from interface + model!
+        }
         TimeDescription currentTimeDescription = pomoData.getCurrentTimeUnit().getTimeDescription();
         currentTimeDescription.setDescription(description);
     }

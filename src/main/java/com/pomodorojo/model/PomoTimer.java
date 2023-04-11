@@ -6,6 +6,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.time.Clock;
 import java.time.Duration;
@@ -16,18 +18,19 @@ import java.util.Date;
 public class PomoTimer implements Serializable{
 
     private Date sessionStartDate; // keep the duration of the session on the server and in the settings as seconds!
-    private SimpleIntegerProperty currentSessionUnit;
+    private transient SimpleIntegerProperty currentSessionUnit;
+    private transient SimpleIntegerProperty maximumSessionUnits;
+    private transient StringProperty displayedTime;
+
     public boolean isDuringPause;
     public boolean isDuringLongPause;
     private boolean isPaused;
     private Duration currentMaxTime; // given in minutes
     private Duration currentShortBreakTime;
-    private SimpleIntegerProperty maximumSessionUnits;
     private Duration currentLongBreakTime;
     private Duration currentPausedDuration;
     private Date lastPausedMeasuredDate;
     private Date pauseStartDate;
-    private StringProperty displayedTime;
 
 
     public PomoTimer(Date currentSessionTime, boolean isPaused,long currentMaxTime,long currentShortBreakTime
@@ -44,7 +47,7 @@ public class PomoTimer implements Serializable{
         this.displayedTime = new SimpleStringProperty();
     }
 
-    public PomoTimer(Clock clock){
+    public PomoTimer(){
         this.sessionStartDate = null;
         this.isPaused = true;
         this.currentMaxTime = Duration.ofMinutes(25); //Duration.ofSeconds(currentMaxTime);
@@ -285,6 +288,34 @@ public class PomoTimer implements Serializable{
 
     public void createStartDate(Clock clock){
         this.sessionStartDate = Date.from(clock.instant());
+    }
+
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException{
+        out.defaultWriteObject();
+        out.writeObject(currentSessionUnit.get());
+        out.writeObject(maximumSessionUnits.get());
+        out.writeObject(displayedTime.get());
+
+    }
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException{
+        in.defaultReadObject();
+        currentSessionUnit = new SimpleIntegerProperty((Integer)in.readObject());
+        maximumSessionUnits = new SimpleIntegerProperty((Integer)in.readObject());
+        displayedTime = new SimpleStringProperty((String)in.readObject());
+
+    }
+    private void readObjectNoData()
+            throws ObjectStreamException{
+        currentMaxTime = Duration.ofMinutes(25); //Duration.ofSeconds(currentMaxTime);
+        currentShortBreakTime =  Duration.ofMinutes(5);
+        currentLongBreakTime =  Duration.ofMinutes(15);
+        currentSessionUnit = new SimpleIntegerProperty(0);
+        currentPausedDuration = Duration.ofSeconds(0);
+        maximumSessionUnits = new SimpleIntegerProperty(3);
+        displayedTime = new SimpleStringProperty();
     }
 
 }
