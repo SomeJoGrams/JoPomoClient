@@ -77,7 +77,7 @@ public class PomoController {
 
     }
 
-    public void cancel(){
+    public void closeControllerThreads(){
         this.timerController.cancel();
     }
 

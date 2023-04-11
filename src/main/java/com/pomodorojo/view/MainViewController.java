@@ -195,7 +195,7 @@ public class MainViewController {
     public void addUnitListener() {
         PomoData pomoData = this.pomoController.getPomoData();
         pomoData.getTimer().getMaxProperty().addListener(new WeakChangeListener<>(
-                maxUnitListener
+            maxUnitListener
         ));
         pomoData.getTimer().getUnitProperty().addListener(new WeakChangeListener<>(
             unitListener

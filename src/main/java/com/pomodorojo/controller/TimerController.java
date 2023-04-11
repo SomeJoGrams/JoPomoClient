@@ -21,7 +21,6 @@ public class TimerController {
         createTimerTask();
     }
     public void startTimer(){
-        // TODO when to load the previous timer state??,
         PomoData pomoData = pomoController.getPomoData();
         PomoTimer pomoTimer = pomoData.getTimer();
         if (!pomoTimer.isPaused()){

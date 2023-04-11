@@ -13,7 +13,6 @@ import java.io.IOException;
 public class PomoApplication extends Application {
 
     private PomoController pomoController;
-
     private MainViewController mainViewController;
     @Override
     public void start(Stage stage) throws IOException {
@@ -51,7 +50,7 @@ public class PomoApplication extends Application {
         mainViewController.closeViewThreads();
         pomoController.getStateController().safeState();
 
-        pomoController.cancel();
+        pomoController.closeControllerThreads();
     }
 
 }

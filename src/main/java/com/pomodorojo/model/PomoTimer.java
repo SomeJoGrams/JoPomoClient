@@ -168,11 +168,11 @@ public class PomoTimer implements Serializable{
         }
         else if (isDuringPause && !isDuringLongPause){
             isDuringPause = false;
-            currentSessionUnit.add(1);
+            currentSessionUnit.set(currentSessionUnit.get() + 1);
         }
         else{// is DuringLongPause
             isDuringLongPause = false;
-            currentSessionUnit.add(1);
+            currentSessionUnit.set(currentSessionUnit.get() + 1);
         }
     }
 
