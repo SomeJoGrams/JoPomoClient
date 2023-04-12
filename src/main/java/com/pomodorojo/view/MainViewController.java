@@ -3,6 +3,7 @@ package com.pomodorojo.view;
 import com.pomodorojo.controller.PomoController;
 import com.pomodorojo.controller.TimerController;
 import com.pomodorojo.model.PomoData;
+import com.pomodorojo.model.PomoTimeUnit;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -97,6 +98,9 @@ public class MainViewController {
 
     @FXML
     void onSettingsButtonClicked(ActionEvent event) {
+        System.out.println(
+                this.pomoController.getPomoData().getCurrentTimeUnit()
+                        .getTimeDescription().getDescription());
     }
 
     @FXML
@@ -206,6 +210,18 @@ public class MainViewController {
         this.currentStage = stage;
     }
 
+    public void renewBindings(){
+        // TODO implement this for a change of active time units
+        // TODO remove old bindings, fix this
+        PomoData pomoData = pomoController.getPomoData();
+        PomoTimeUnit pomoTimeUnit = pomoData.getCurrentTimeUnit();
+        categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
+        timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
+        descriptionField.textProperty().bindBidirectional(
+                pomoTimeUnit.getTimeDescription().getDescriptionProperty());
+
+    }
+
 
     public void closeViewThreads(){
         systemNotificationController.removeTraySymbol();
@@ -221,10 +237,9 @@ public class MainViewController {
         ratingValue.textProperty().bind(ratingProperty.asString());
 
         categorySelection.getItems().setAll(pomoData.getTimeCategories());
-        categorySelection.textProperty().bind(pomoData.getCurrentTimeCategoryProperty());
 
+        renewBindings();
 
-        timer.textProperty().bind(pomoData.getTimer().getDisplayedTimeProperty());
 
         // convert the max unit to circles
         maxUnitListener = new ChangeListener<Number>() {
@@ -257,7 +272,6 @@ public class MainViewController {
         addMaxUnits();
         updateUnitVisibility();
         addUnitListener();
-
 
         // load tray Symobl and Notification
         systemNotificationController = new SystemNotificationController();

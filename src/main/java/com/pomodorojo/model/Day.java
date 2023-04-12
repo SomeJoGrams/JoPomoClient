@@ -1,6 +1,7 @@
 package com.pomodorojo.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 public class Day implements Serializable,Comparable<Day> {
@@ -13,6 +14,7 @@ public class Day implements Serializable,Comparable<Day> {
         this.month = month;
         this.year = year;
     }
+
 
     @Override
     public int compareTo(Day o) throws NullPointerException {

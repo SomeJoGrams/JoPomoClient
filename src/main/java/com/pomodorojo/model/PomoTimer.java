@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Clock;
 import java.time.Duration;
@@ -22,8 +23,8 @@ public class PomoTimer implements Serializable{
     private transient SimpleIntegerProperty maximumSessionUnits;
     private transient StringProperty displayedTime;
 
-    public boolean isDuringPause;
-    public boolean isDuringLongPause;
+    public boolean isDuringBreak;
+    public boolean isDuringLongBreak;
     private boolean isPaused;
     private Duration currentMaxTime; // given in minutes
     private Duration currentShortBreakTime;
@@ -65,11 +66,11 @@ public class PomoTimer implements Serializable{
     }
 
     public void setDuringPause(boolean duringPause) {
-        isDuringPause = duringPause;
+        isDuringBreak = duringPause;
     }
 
     public void setDuringLongPause(boolean duringLongPause) {
-        isDuringLongPause = duringLongPause;
+        isDuringLongBreak = duringLongPause;
     }
 
     public void setMaximumSessionUnits(int maximumSessionUnits){
@@ -80,7 +81,7 @@ public class PomoTimer implements Serializable{
 
 
     public void startSession(Clock clock){
-        isPaused = false;
+        return;
     }
 
     public void setCurrentMaxTime(Duration currentMaxTime) {
@@ -137,10 +138,10 @@ public class PomoTimer implements Serializable{
             return false;
         }
         Duration currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
-        if (!isDuringPause && !isDuringLongPause){
+        if (!isDuringBreak && !isDuringLongBreak){
             limitReached = currentDuration.compareTo(currentMaxTime);// f.e. the current duration is less -> negative value
         }
-        else if (isDuringPause && !isDuringLongPause){
+        else if (isDuringBreak && !isDuringLongBreak){
             limitReached = currentDuration.compareTo(currentShortBreakTime);
         }
         else{// is DuringLongPause
@@ -154,26 +155,34 @@ public class PomoTimer implements Serializable{
         currentPausedDuration = Duration.ZERO;
         lastPausedMeasuredDate = null;
         sessionStartDate = curDate;
-        isPaused = false;
-        if (!isDuringPause && !isDuringLongPause){
+        if (!isDuringBreak && !isDuringLongBreak){
             // either go into the long or the short pause depending on the amount of sessionUnits
             if (currentSessionUnit.get() == maximumSessionUnits.get()){
                 currentSessionUnit.set(0);
-                isDuringPause = false;
-                isDuringLongPause = true;
+                isDuringBreak = false;
+                isDuringLongBreak = true;
             }
             else{
-                isDuringPause = true;
+                if (isPaused && currentSessionUnit.get() == 0){ // start state
+                    System.out.println("in start state");
+                    this.getUnitProperty().set(this.getUnitProperty().get() + 1);
+                }
+                else{
+//                if (this.getUnitProperty().get() == 0){
+                    isDuringBreak = true; // TODO maybe remove going into the break here
+                }
             }
         }
-        else if (isDuringPause && !isDuringLongPause){
-            isDuringPause = false;
+        else if (isDuringBreak && !isDuringLongBreak){
+            isDuringBreak = false;
             currentSessionUnit.set(currentSessionUnit.get() + 1);
         }
-        else{// is DuringLongPause
-            isDuringLongPause = false;
+        else {// is DuringLongPause
+            isDuringLongBreak = false;
             currentSessionUnit.set(currentSessionUnit.get() + 1);
         }
+        isPaused = false;
+
     }
 
     /**
@@ -181,15 +190,15 @@ public class PomoTimer implements Serializable{
      */
     public void skipBreak(Clock clock){
         this.next(clock);
-//        if (isDuringPause || isDuringLongPause){
+//        if (isDuringBreak || isDuringLongBreak){
 //            this.next(clock);
 //        }
 //        else{
 //            // TODO think about a thing that could be done here perhaps just dont add the skipped time!
 //        }
-//                if (isDuringPause || isDuringLongPause){
-//                    isDuringPause = false;
-//                    isDuringLongPause = false;
+//                if (isDuringBreak || isDuringLongBreak){
+//                    isDuringBreak = false;
+//                    isDuringLongBreak = false;
 //                }
 //                if (isPaused){
 //                    isPaused = false;
@@ -221,30 +230,58 @@ public class PomoTimer implements Serializable{
         isPaused = !isPaused;
     }
 
-    public void calculateCurrentSessionTime(Clock clock){
+    public void calculateCurrentSessionTime(Clock clock){ // TODO remove the duplicated code
         Date curDate = Date.from(clock.instant());
         Duration currentDuration;
         if (sessionStartDate == null){
             initSessionTime(clock); // draw the amx time
             return;
         }
-        if (!isPaused){
-            // sessionDuration = (end - start)
-            // sessionDuration -= currentPausedDuration
-            //  maxTime - sessionDuration
-            currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
-            currentDuration = currentMaxTime.minus(currentDuration);
-        }
-        else{
-            // during the pause increase the pause duration by the passed time, calculate the currentDuration with it
-            // time should stay with the same value
-            if (lastPausedMeasuredDate == null){
-                lastPausedMeasuredDate = curDate; // stores the date of when the pause started and was measured the last time
+        if (isDuringBreak){
+            if (!isPaused) {
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentShortBreakTime.minus(currentDuration);
             }
-            currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(),curDate.toInstant()));
-            currentDuration = Duration.between(sessionStartDate.toInstant(),curDate.toInstant()).minus(currentPausedDuration);
-            currentDuration = currentMaxTime.minus(currentDuration);
-            lastPausedMeasuredDate = curDate;
+            else {
+                if (lastPausedMeasuredDate == null) {
+                    lastPausedMeasuredDate = curDate; // stores the date of when the pause started and was measured the last time
+                }
+                currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(), curDate.toInstant()));
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentShortBreakTime.minus(currentDuration);
+                lastPausedMeasuredDate = curDate;
+            }
+        }
+        else if (isDuringLongBreak){
+            if (!isPaused){
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentLongBreakTime.minus(currentDuration); // todo also add the the paused duration!
+            }
+            else {
+                if (lastPausedMeasuredDate == null) {
+                    lastPausedMeasuredDate = curDate; // stores the date of when the pause started and was measured the last time
+                }
+                currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(), curDate.toInstant()));
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentLongBreakTime.minus(currentDuration);
+                lastPausedMeasuredDate = curDate;
+            }
+        }
+        else {
+            if (!isPaused) {
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentMaxTime.minus(currentDuration);
+            } else {
+                // during the pause increase the pause duration by the passed time, calculate the currentDuration with it
+                // time should stay with the same value
+                if (lastPausedMeasuredDate == null) {
+                    lastPausedMeasuredDate = curDate; // stores the date of when the pause started and was measured the last time
+                }
+                currentPausedDuration = currentPausedDuration.plus(Duration.between(lastPausedMeasuredDate.toInstant(), curDate.toInstant()));
+                currentDuration = Duration.between(sessionStartDate.toInstant(), curDate.toInstant()).minus(currentPausedDuration);
+                currentDuration = currentMaxTime.minus(currentDuration);
+                lastPausedMeasuredDate = curDate;
+            }
         }
         updateDisplayedTime(clock,currentDuration);
     }
@@ -278,8 +315,8 @@ public class PomoTimer implements Serializable{
 
     public void resetTimer(Clock clock){
         isPaused = true;
-        isDuringPause = false;
-        isDuringLongPause = false;
+        isDuringBreak = false;
+        isDuringLongBreak = false;
         currentSessionUnit.set(0);
         sessionStartDate = null;
         currentPausedDuration = Duration.ZERO;
@@ -290,7 +327,10 @@ public class PomoTimer implements Serializable{
         this.sessionStartDate = Date.from(clock.instant());
     }
 
-
+    public Date getStartDate() {
+        return this.sessionStartDate;
+    }
+    @Serial
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException{
         out.defaultWriteObject();
@@ -299,6 +339,7 @@ public class PomoTimer implements Serializable{
         out.writeObject(displayedTime.get());
 
     }
+    @Serial
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException{
         in.defaultReadObject();
@@ -307,6 +348,7 @@ public class PomoTimer implements Serializable{
         displayedTime = new SimpleStringProperty((String)in.readObject());
 
     }
+    @Serial
     private void readObjectNoData()
             throws ObjectStreamException{
         currentMaxTime = Duration.ofMinutes(25); //Duration.ofSeconds(currentMaxTime);
@@ -318,6 +360,10 @@ public class PomoTimer implements Serializable{
         displayedTime = new SimpleStringProperty();
     }
 
+
+    public boolean duringLongBreak() {
+        return isDuringLongBreak;
+    }
 }
 
 

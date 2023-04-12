@@ -1,6 +1,7 @@
 package com.pomodorojo.controller;
 
 import com.pomodorojo.model.PomoData;
+import com.pomodorojo.model.PomoHistory;
 
 public class PomoController {
     private TimerController timerController;
@@ -16,6 +17,7 @@ public class PomoController {
     private ClientController clientController;
 
     private PomoData pomoData;
+    private PomoHistory pomoHistory;
 
     public TimerController getTimerController() {
         return timerController;
@@ -62,6 +64,10 @@ public class PomoController {
         return pomoData;
     }
 
+    public PomoHistory getPomoHistory(){
+        return this.pomoHistory;
+    }
+
     public PomoController(){
 
         // client controller should always be crated before every other controller, in order
@@ -84,5 +90,10 @@ public class PomoController {
 
     public void setPomoData(PomoData curPomoData) {
         this.pomoData = curPomoData;
+    }
+
+
+    public void setPomoHistory(PomoHistory curPomoHistory) {
+        this.pomoHistory = curPomoHistory;
     }
 }

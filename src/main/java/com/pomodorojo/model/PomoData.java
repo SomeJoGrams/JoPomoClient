@@ -26,6 +26,7 @@ public class PomoData implements Serializable {
     private transient ProgramSettings programSettings;
     private PomoTimer timer;
     private ArrayList<TimeCategory> timeCategories; // internal list that stores the timeCategories
+    // todo probably better to make this transient and only load some values like, the last 2 months
     private HashMap<Date,ArrayList<PomoTimeUnit>> timeUnits;// the day is mapped to the pomodoros of the day
     private TimeCategory currentTimeCategory;
     private PomoTimeUnit currentTimeUnit;
@@ -54,6 +55,7 @@ public class PomoData implements Serializable {
         timer = new PomoTimer();
 //        currentTimeUnit = new PomoTimeUnit(timer.getCurrentMaxTime(),timeCategories.get(0).getCategoryString());
         currentTimeCategory = observableTimeCategories.get(0); // keep a reference to the active TimeCategory TODO load this from settings
+        addPomoTimeUnit("",null);
     }
 
     public PomoClock getPomoClock() {
@@ -72,6 +74,10 @@ public class PomoData implements Serializable {
         return currentTimeCategory.textProperty();
     }
 
+    public String getCurrentTimeCategory(){
+        return this.getCurrentTimeCategoryProperty().get();
+    }
+
     public void setCurrentTimeUnit(PomoTimeUnit currentTimeUnit) {
         this.currentTimeUnit = currentTimeUnit;
     }
@@ -80,10 +86,26 @@ public class PomoData implements Serializable {
         return this.currentTimeUnit;
     }
 
+    public void addPomoTimeUnit(String description,Date startDate){
+        if (this.currentTimeUnit == null){
+            TimeDescription timeDescription = new TimeDescription(description,"");
+            this.currentTimeUnit = new PomoTimeUnit(getTimer().getMaxProperty().get(),
+                    currentTimeCategory.getText(),timeDescription,startDate);
+        }
+        else{ // create a new pomo time unit TODO change the view listeners!
+            TimeDescription timeDescription = new TimeDescription(description,"");
+            this.currentTimeUnit = new PomoTimeUnit(getTimer().getMaxProperty().get(),
+                    currentTimeCategory.getText(),timeDescription,startDate);
+        }
+    }
+
+
+    @Serial
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
-        out.defaultWriteObject(); // somehow the arraylist is not correctly serialized?
+        out.defaultWriteObject();
     }
+    @Serial
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException{
         in.defaultReadObject();
@@ -94,13 +116,14 @@ public class PomoData implements Serializable {
         programSettings = new ProgramSettings();
 
     }
+    @Serial
     private void readObjectNoData()
             throws ObjectStreamException {
         currentUserSession = new UserSession();//TODO load differently
         timeCategories = new ArrayList<>();
         observableTimeCategories = FXCollections.observableList(timeCategories);
         pomoClock = new PomoClock();
-        programSettings = new ProgramSettings(); // TODO them program settings corerctly in the state controller
+        programSettings = new ProgramSettings(); // TODO them program settings correctly in the state controller
         timer = new PomoTimer();
         timeUnits = new HashMap<>();
         timeCategories.add(new TimeCategory("Standard",null)); // TODO set default categories Important do not edit the time categories directly!
@@ -108,6 +131,7 @@ public class PomoData implements Serializable {
         currentTimeUnit = null;
 
     }
+
 //client type also removed from constructor
 //    public ClientType getClientType() {
 //        return this.clientType;

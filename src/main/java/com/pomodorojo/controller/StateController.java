@@ -2,6 +2,7 @@ package com.pomodorojo.controller;
 
 import com.pomodorojo.model.ClientType;
 import com.pomodorojo.model.PomoData;
+import com.pomodorojo.model.PomoHistory;
 import com.pomodorojo.model.TimeCategory;
 
 
@@ -16,7 +17,11 @@ public class StateController {
     private FileSystem fileSystem;
     private WatchKey dirWatchKey;
 
+    private boolean restoreState = false;
+
+
     private static final String statePath = "pomoState.bin";
+    private static final String historyPath = "pomoHistory.bin";
     public StateController(PomoController pomoController){
         this.pomoController = pomoController;
         String homeDirectory;
@@ -37,8 +42,8 @@ public class StateController {
             // TODO implement behaviour for no available security rights
         }
         File[] existingFiles = this.programStateStorageDirectory.toFile().listFiles();
-        for (int i = 0; i < existingFiles.length; i++) {
-            System.out.println(existingFiles[i].toString());
+        for (File existingFile : existingFiles) {
+            System.out.println(existingFile.toString());
         }
         //TODO watch for changes of the files and not creatable dirs
 //        try {
@@ -63,29 +68,36 @@ public class StateController {
      */
     public void loadState(){
         System.out.println("loading the state");
+        loadProgramState();
+        loadPomoHistory();
+    }
+
+    private void loadProgramState(){
         // TODO load some of the state from the online database, compare versions
-        File[] cacheFiles = this.programCacheDir.toFile().listFiles();
         PomoData curPomoData = null;
-        if (cacheFiles.length == 0){
-            // no safe state can be loaded
-        }
-        else{// attempt to de-serialize
-            try {
-                FileInputStream fInStream = new FileInputStream( new File(this.programCacheDir.toString(),statePath));
-                BufferedInputStream bufferedFileOutStream = new BufferedInputStream(fInStream);
-                ObjectInputStream inputStream = new ObjectInputStream(bufferedFileOutStream);
-                curPomoData = (PomoData) inputStream.readObject();
-                inputStream.close();
-            }
-            catch (IOException e){
-                System.err.println("could not read a state");
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+        if (restoreState) {
+            File[] cacheFiles = this.programCacheDir.toFile().listFiles();
+            if (cacheFiles.length == 0) {
+                // no safe state can be loaded
+            } else {// attempt to de-serialize
+                try {
+                    FileInputStream fInStream = new FileInputStream(new File(this.programCacheDir.toString(), statePath));
+                    BufferedInputStream bufferedFileOutStream = new BufferedInputStream(fInStream);
+                    ObjectInputStream inputStream = new ObjectInputStream(bufferedFileOutStream);
+                    curPomoData = (PomoData) inputStream.readObject();
+                    inputStream.close();
+                } catch (IOException e) {
+                    System.err.println("could not read a state");
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         if (curPomoData == null){
+            System.out.println("creating a new state");
             curPomoData = new PomoData();
         }
+
         this.pomoController.setPomoData(curPomoData);
         for (TimeCategory timeCategory : curPomoData.getTimeCategories()){
             System.out.println(timeCategory.toString());
@@ -94,8 +106,38 @@ public class StateController {
 
     }
 
+    private void loadPomoHistory(){
+        PomoHistory curPomoHistory = null;
+        if (restoreState) {
+            try {
+                FileInputStream fInStream = new FileInputStream(new File(this.programCacheDir.toString(), historyPath));
+                BufferedInputStream bufferedFileOutStream = new BufferedInputStream(fInStream);
+                ObjectInputStream inputStream = new ObjectInputStream(bufferedFileOutStream);
+                curPomoHistory = (PomoHistory) inputStream.readObject();
+                inputStream.close();
+            } catch (IOException e) {
+                System.err.println("could not read a history");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (curPomoHistory == null){
+            curPomoHistory = new PomoHistory();
+        }
+        this.pomoController.setPomoHistory(curPomoHistory);
+    }
+
     public void safeState(){
+        if (!restoreState){
+            return;
+        }
         System.out.println("saving the state");
+        safeProgramState();
+        safePomoHistory();
+
+    }
+
+    private void safeProgramState(){
         try {
             FileOutputStream fOutStream = new FileOutputStream(new File(this.programCacheDir.toString(),statePath));
             BufferedOutputStream bufferedFileOutStream = new BufferedOutputStream(fOutStream);
@@ -105,10 +147,20 @@ public class StateController {
         }
         catch (IOException e){
             System.err.println("could not safe the state"); // TODO proper error handling
-
         }
+    }
 
-
+    private void safePomoHistory(){
+        try {
+            FileOutputStream fOutStream = new FileOutputStream(new File(this.programCacheDir.toString(),historyPath));
+            BufferedOutputStream bufferedFileOutStream = new BufferedOutputStream(fOutStream);
+            ObjectOutputStream outputStream = new ObjectOutputStream(bufferedFileOutStream);
+            outputStream.writeObject(this.pomoController.getPomoHistory());
+            outputStream.close();
+        }
+        catch (IOException e){
+            System.err.println("could not safe the state"); // TODO proper error handling
+        }
     }
 
 
